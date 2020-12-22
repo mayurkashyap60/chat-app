@@ -1,5 +1,19 @@
 var socket = io();
 
+function scrollToBottom () {
+  var messages = jQuery('#messages');
+  var newMessage = messages.children('li:last-child');
+  var clientHeight = messages.prop('clientHeight');
+  var scrollTop = messages.prop('scrollTop');
+  var scrollHeight = messages.prop('scrollHeight');
+  var newMessageHeight = newMessage.innerHeight();
+  var lastMessageHeight = newMessage.prev().innerHeight();
+
+  if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+    messages.scrollTop(scrollHeight);
+  }
+}
+
 socket.on('connect', function () {
   console.log('Connected to server.');
 });
@@ -19,11 +33,20 @@ socket.on('newMessage', function (createMsg) {
     createdAt: formattedTime
   });
   jQuery('#messages').append(html);
+  scrollToBottom();
+});
 
-  // var li = jQuery('<li></li>');
-  // li.text(`${createMsg.from} ${formattedTime}: ${createMsg.text}`);
-  //
-  // jQuery('#messages').append(li);
+socket.on('newLocationMessage', function (createMsg) {
+  var formattedTime = moment(createMsg.createdAt).format('h:mm a');
+  var template = jQuery('#location-message-template').html();
+  var html = Mustache.render(template, {
+    from: createMsg.from,
+    url: createMsg.url,
+    createdAt: formattedTime
+  });
+
+  jQuery('#messages').append(html);
+  scrollToBottom();
 });
 
 jQuery('#message-form').on('submit', function (e) {
@@ -39,25 +62,7 @@ jQuery('#message-form').on('submit', function (e) {
   });
 });
 
-socket.on('newLocationMessage', function (createMsg) {
-  var formattedTime = moment(createMsg.createdAt).format('h:mm a');
-  var template = jQuery('#location-message-template').html();
-  var html = Mustache.render(template, {
-    from: createMsg.from,
-    url: createMsg.url,
-    createdAt: formattedTime
-  });
 
-  jQuery('#messages').append(html);
-  // var li = jQuery('<li></li>');
-  // var a = jQuery('<a target="_blank">My Current Location</a>');
-  //
-  // li.text(`${createMsg.from} ${formattedTime}: `);
-  // a.attr('href', createMsg.url);
-  // li.append(a);
-  //
-  // jQuery('#messages').append(li);
-});
 
 var locationButton = jQuery('#send-location');
 locationButton.on('click', function () {
