@@ -19,13 +19,11 @@ io.on('connection', (socket) => {
 
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User Joined'));
 
-
   socket.on('createMessage', (createMsg, callback) => {
     console.log('Create Message', createMsg);
     io.emit('newMessage', generateMessage(createMsg.from, createMsg.text));
     callback();
   });
-
 
   socket.on('createLocationMessage', (coords) => {
     io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
@@ -39,10 +37,3 @@ io.on('connection', (socket) => {
 server.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });
-
-
-// socket.broadcast.emit('newMessage', {
-  //   from: createMsg.from,
-  //   text: createMsg.text,
-  //   createdAt: new Date().getTime()
-  // });

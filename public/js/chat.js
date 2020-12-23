@@ -22,7 +22,6 @@ socket.on('disconnect', function () {
   console.log('Disconnected from server.');
 });
 
-
 socket.on('newMessage', function (createMsg) {
   // console.log('New Message', createMsg);
   var formattedTime = moment(createMsg.createdAt).format('h:mm a');
@@ -61,8 +60,6 @@ jQuery('#message-form').on('submit', function (e) {
     messageTextbox.val('')
   });
 });
-
-
 
 var locationButton = jQuery('#send-location');
 locationButton.on('click', function () {
